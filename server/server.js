@@ -12,6 +12,8 @@ var app = express();
  //crud -> create - read - update - delete
 // for creating we use post method  
 
+port = process.env.PORT||3000;
+
 app.use(bodyParser.json());   //using it we can send JSON to our application
 
 app.post('/todos',(req,res)=>{
@@ -49,6 +51,6 @@ app.get('/todos/:id',(req,res)=>{
 
 module.exports = {app};
 
-app.listen(3000,()=>{
-	console.log('Started on port 3000');
+app.listen(port,()=>{
+	console.log(`Started on port ${port}`);
 });
