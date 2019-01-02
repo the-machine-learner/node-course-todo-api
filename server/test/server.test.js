@@ -9,7 +9,9 @@ const todos = [{
   text: 'First test todo'
 },{
   _id: new ObjectID(),
-  text: 'Second test todo'
+  text: 'Second test todo',
+  completed: true,
+  completedAt: 333
 }];
 beforeEach((done) => {
   Todo.remove({}).then(() =>{
@@ -138,4 +140,31 @@ describe('DLELTE /todos/:id',()=>{
             done();
         });
     });
+});
+
+
+describe('PATCH /todos/:id',()=>{
+  var text = "new text to be updated";
+  it('should update the todo',(done)=>{
+      request(app)
+      .patch(`/todos/${todos[0]._id.toHexString()}`)
+      .send({completed:true,
+        text})
+      .expect(200)
+      .expect((res)=>{
+          expect(res.body.todo.completedAt).toBeA('number'); 
+          expect(res.body.todo.completed).toBe(true);
+          expect(res.body.todo.text).toBe(text);
+      }).end(done);
+  });
+  it('should update the todo to remove the completed at',(done)=>{
+      request(app)
+      .patch(`/todos/${todos[0]._id.toHexString()}`)
+      .send({completed:false})
+      .expect(200)
+      .expect((res)=>{
+        expect(res.body.todo.completed).toBe(false);
+        expect(res.body.todo.completedAt).toBe(null);
+      }).end(done);
+  });
 });
