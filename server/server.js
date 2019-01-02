@@ -1,3 +1,5 @@
+require('./config/config');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
@@ -14,7 +16,7 @@ var app = express();
  //crud -> create - read - update - delete
 // for creating we use post method  
 
-port = process.env.PORT||3000;
+port = process.env.PORT;
 
 app.use(bodyParser.json());   //using it we can send JSON to our application
 
