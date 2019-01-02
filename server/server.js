@@ -29,6 +29,10 @@ app.post('/todos',(req,res)=>{
 	});
 });
 
+app.get("/",(req,res)=>{
+	res.send("<h1>Welcome to Todos APP</h1>");
+});
+
 app.get("/todos",(req,res)=>{
 	Todo.find().then((todos)=>{
 		res.send({todos});
