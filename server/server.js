@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const _ = require('lodash');
 var {ObjectID} = require('mongodb');
 var { mongoose} = require('./db/mongoose');
-
+var {authentication} = require('./../middleware/middleware.js');
 mongoose.Promise = global.Promise;
 
 var {Todo} = require('./models/todo');
@@ -95,6 +95,40 @@ app.patch('/todos/:id',(req,res)=>{
     },(e)=>{
     	res.status(400).send();
     });
+});
+
+
+//POST USER
+app.post('/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  var user = new User(body);
+
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
+});
+
+//GET USER
+// app.get('/users/me',(req,res)=>{
+// 	var token = req.header('x-auth');
+// 	User.findByToken(token).then((user)=>{
+// 		if(!user) {
+// 			return Promise.reject(); //control passes to catchblock
+// 		}
+
+// 		res.send(user);
+// 	}).catch((e)=>{
+// 		res.status(401).send();
+// 	});
+// });
+
+//Middleware version of GET USER
+app.get('/users/me',authentication,(req,res)=>{
+	req.send(req.user);
 });
 
 module.exports = {app};
