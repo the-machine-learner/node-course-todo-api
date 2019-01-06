@@ -9,8 +9,8 @@ var {authentication} = require('./../middleware/middleware.js');
 mongoose.Promise = global.Promise;
 
 var {Todo} = require('./models/todo');
-var {User} = require('./models/user');
- 
+var {User} = require('./models/user.js');
+
 var app = express();
 
  //crud -> create - read - update - delete

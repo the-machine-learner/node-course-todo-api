@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 var UserSchema = new mongoose.Schema({
   email: {
@@ -60,6 +61,7 @@ UserSchema.statics.findByToken = function (token) {
 	}catch (e){
 
 		return Promise.reject('test');
+
 	}
 	return User.findOne({
 		'_id': decoded._id,
@@ -68,6 +70,24 @@ UserSchema.statics.findByToken = function (token) {
 	});
 };
 var User = mongoose.model('User', UserSchema);
+
+// in general middleware decleration goes like this UserSchema.pre(event,function that is run before event);
+UserSchema.pre('save',function(next){
+	var user = this;
+
+	if(user.isModified('password')){
+		bcrypt.genSalt(10,(err,salt)=>{
+			bcrypt.hash(user.password,salt,(err,hash)=>{
+				user.password = hash;
+				console.log(hash);
+        next();
+			});
+		}); 
+	}else{
+		next();
+	}
+});
+
 
 module.exports = {User};
 
