@@ -153,6 +153,14 @@ app.post('/users/login',(req,res)=>{
 
 });
 
+app.delete('/users/me/token',authentication,(req,res)=>{
+	req.user.removeToken(req.token).then(()=>{
+		res.status(200).send();
+	},()=>{
+		res.status(400).send();
+	});
+});
+
 module.exports = {app};
 
 app.listen(port,()=>{
