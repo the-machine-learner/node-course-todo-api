@@ -5,11 +5,12 @@ const bodyParser = require('body-parser');
 const _ = require('lodash');
 var {ObjectID} = require('mongodb');
 var { mongoose} = require('./db/mongoose');
-var {authentication} = require('./../middleware/middleware.js');
+const bcrypt = require('bcryptjs');
 mongoose.Promise = global.Promise;
 
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user.js');
+var {authentication} = require('./../middleware/middleware.js');
 
 var app = express();
 
@@ -106,7 +107,7 @@ app.post('/users', (req, res) => {
   user.save().then(() => {
     return user.generateAuthToken();
   }).then((token) => {
-    res.header('x-auth', token).send(user);
+
   }).catch((e) => {
     res.status(400).send(e);
   });
@@ -129,6 +130,27 @@ app.post('/users', (req, res) => {
 //Middleware version of GET USER
 app.get('/users/me',authentication,(req,res)=>{
 	res.send(req.user);
+});
+
+//POST USER LOGIN
+app.post('/users/login',(req,res)=>{
+
+	var pass = req.body.password;
+
+	User.find({email:req.body.email}).then((user)=>{
+		bcrypt.compare(pass,user[0].password,(err,response)=>{
+		if(response)
+			return user[0].generateAuthToken().then((token)=>{
+				res.header('x-auth', token).send(user);				
+			});
+		else
+			return Promise.reject();
+	});
+
+	}).catch((e)=>{
+		res.status(401).send();
+	});
+
 });
 
 module.exports = {app};
