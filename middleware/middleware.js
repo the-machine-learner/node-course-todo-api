@@ -1,9 +1,11 @@
-const User = require("C:/Users/Ritvik/Desktop/portfolio/NodeJs/node-todo-api/server/models/user.js").User;
+const {User} = require('./../server/models/user');
 
 var authentication = (req,res,next)=>{
 	var token = req.header('x-auth');
+	// console.log(token);
 	User.findByToken(token).then((user)=>{
 		if(!user) {
+			// console.log('\n user not found');
 			return Promise.reject(); //control passes to catchblock
 		}
 

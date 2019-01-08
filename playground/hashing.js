@@ -2,6 +2,7 @@ const {SHA256} = require('crypto-js');
 const jwt = require('jsonwebtoken');  //advanced lib
 const bcrypt = require('bcryptjs');
 
+
 var password = '123abc';
 bcrypt.genSalt(10,(err,salt)=>{
 	bcrypt.hash(password,salt,(err,hash)=>{
@@ -15,6 +16,13 @@ bcrypt.compare(password, hashedPassword, (err,res)=>{
 	console.log(res);
 });
 
+
+
+UserSchema.pre('save',function(next) {
+	var user = this;
+	if(user.isModified())
+
+});
 //2.step
 // var data = {
 // 	id: 10

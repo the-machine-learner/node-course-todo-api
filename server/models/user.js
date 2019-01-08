@@ -54,12 +54,11 @@ UserSchema.methods.generateAuthToken = function () {
 };
 
 UserSchema.statics.findByToken = function (token) {
-	var User = this;
+  var User = this;
 	var decoded;
 	try{
 		decoded = jwt.verify(token,'abc123');
 	}catch (e){
-
 		return Promise.reject('test');
 
 	}
@@ -79,7 +78,6 @@ UserSchema.pre('save',function(next){
 		bcrypt.genSalt(10,(err,salt)=>{
 			bcrypt.hash(user.password,salt,(err,hash)=>{
 				user.password = hash;
-				console.log(hash);
         next();
 			});
 		}); 

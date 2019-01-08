@@ -128,7 +128,7 @@ app.post('/users', (req, res) => {
 
 //Middleware version of GET USER
 app.get('/users/me',authentication,(req,res)=>{
-	req.send(req.user);
+	res.send(req.user);
 });
 
 module.exports = {app};
