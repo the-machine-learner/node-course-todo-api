@@ -201,8 +201,9 @@ describe('POST/users',()=>{
       User.findOne({email}).then((user)=>{
         expect(user).toExist();
         expect(user.password).toNotBe(password);
+        done();
       });
-      done();
+
     });
   });
   it('should return a error for pass<6',(done)=>{
@@ -229,3 +230,23 @@ describe('POST/users',()=>{
     }).end(done);
   });
 });
+
+    console.log(users[0].tokens[0].token);
+describe('DELETE /user/me/token',()=>{
+  it('should remove auth token on logout',(done)=>{
+
+    request(app)
+    .delete('/users/me/token')
+    .set({'x-auth':users[0].tokens[0].token})
+    .expect(200).end((err,res)=>{
+      if(err)
+      {
+        return done(err);
+      }
+      User.findOne({email:users[0].email}).then((user)=>{
+        expect(user.tokens.token).toNotExist();
+        done();
+      });
+    })
+  })
+})
