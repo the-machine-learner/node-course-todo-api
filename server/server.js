@@ -21,9 +21,10 @@ port = process.env.PORT;
 
 app.use(bodyParser.json());   //using it we can send JSON to our application
 
-app.post('/todos',(req,res)=>{
+app.post('/todos',authentication,(req,res)=>{
 	var todo = new Todo({
-		text: req.body.text
+		text: req.body.text,
+		_creator: req.user._id
 	});
 	todo.save().then((doc)=>{
 		res.send(doc);
@@ -36,8 +37,8 @@ app.get("/",(req,res)=>{
 	res.send("<h1>Welcome to Todos APP</h1>");
 });
 
-app.get("/todos",(req,res)=>{
-	Todo.find().then((todos)=>{
+app.get("/todos",authentication,(req,res)=>{
+	Todo.find({_creator: req.user._id}).then((todos)=>{
 		res.send({todos});
 	},(e)=>{res.status(400).send(e);});
 });

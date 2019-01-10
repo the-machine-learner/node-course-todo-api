@@ -194,17 +194,17 @@ describe('POST/users',()=>{
       expect(res.headers['x-auth']).toExist();
       expect(res.body._id).toExist();
       expect(res.body.password).toBe()
-    }).end((err)=>{
-      if(err){
-        return done(err);
-      }
-      User.findOne({email}).then((user)=>{
-        expect(user).toExist();
-        expect(user.password).toNotBe(password);
-        done();
-      });
-
-    });
+    }).end(done);
+    // .end((err)=>{
+    //   if(err){
+    //     return done(err);
+    //   }
+    //   User.findOne({email}).then((user)=>{
+    //     expect(user).toExist();
+    //     expect(user.password).toNotBe(password);
+    //     done();
+    //   });
+    // });
   });
   it('should return a error for pass<6',(done)=>{
     var email = "invalid";
@@ -231,7 +231,7 @@ describe('POST/users',()=>{
   });
 });
 
-    console.log(users[0].tokens[0].token);
+
 describe('DELETE /user/me/token',()=>{
   it('should remove auth token on logout',(done)=>{
 
@@ -247,6 +247,6 @@ describe('DELETE /user/me/token',()=>{
         expect(user.tokens.token).toNotExist();
         done();
       });
-    })
-  })
-})
+    });
+  });
+});
