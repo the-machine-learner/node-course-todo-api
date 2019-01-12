@@ -44,7 +44,7 @@ app.get("/todos",authentication,(req,res)=>{
 	},(e)=>{res.status(400).send(e);});
 });
 
-app.get('/todos/:id',(req,res)=>{
+app.get('/todos/:id',authentication,(req,res)=>{
 	var id = req.params.id;
 
 	if(!ObjectID.isValid(id))
@@ -52,7 +52,10 @@ app.get('/todos/:id',(req,res)=>{
 			console.log(id);
 		return res.status(404).send();
 	} 
-	Todo.findById(id).then((todo)=>{
+	Todo.findOne({
+		_id: id,
+		_creator: req.user._id
+	}).then((todo)=>{
 	if(!todo){
 		return res.status(404).send();
 	}
@@ -60,13 +63,16 @@ app.get('/todos/:id',(req,res)=>{
 	});
 });
 
-app.delete('/todos/:id',(req,res)=>{
+app.delete('/todos/:id',authentication,(req,res)=>{
 	var id = req.params.id;
 	if(!ObjectID.isValid(id))
 	{
 			return res.status(404).send('Invalid ID');
 	}
-	Todo.findByIdAndRemove(id).then((todo)=>{
+	Todo.findOneAndRemove({
+		_id:id,
+		_creator:req.user._id
+	}).then((todo)=>{
 		if(!todo){
 			return res.status(404).send();				
 		}
@@ -76,7 +82,7 @@ app.delete('/todos/:id',(req,res)=>{
 	});
 });
 
-app.patch('/todos/:id',(req,res)=>{
+app.patch('/todos/:id',authentication,(req,res)=>{
 	var id = req.params.id;
 	var body = _.pick(req.body,['text','completed']);
     if(!ObjectID.isValid(id)){
@@ -90,7 +96,7 @@ app.patch('/todos/:id',(req,res)=>{
     	body.completedAt = null;
     }
 
-    Todo.findByIdAndUpdate(id,{$set:body},{new:true}).then((todo)=>{
+    Todo.findOneAndUpdate({_id:id,_creator:req.user._id},{$set:body},{new:true}).then((todo)=>{
     	if(!todo){
     		return res.status(404).send();
     	}
@@ -105,7 +111,7 @@ app.patch('/todos/:id',(req,res)=>{
 app.post('/users', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   var user = new User(body);
-    user.save().then(() => {
+  user.save().then(() => {
     return user.generateAuthToken();
   }).then((token) => {
     res.header('x-auth', token).send(user);	
@@ -145,7 +151,7 @@ app.post('/users/login',(req,res)=>{
 				res.header('x-auth', token).send(user);				
 			});
 		else
-			return Promise.reject();
+			res.status(401).send();
 	});
 
 	}).catch((e)=>{
